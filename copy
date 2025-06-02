@@ -1,1 +1,123 @@
-<body> <section class="vh-10 d-flex align-items-center justify-content-center"> <div class="col-md-8"> <h3 class="text-center mb-4"><i class="fa-solid fa-user-md"></i> Doctor Profile</h3> <h5>Please fill the below details</h5> <form #profileForm="ngForm" (ngSubmit)="addProfile(profileForm)"> <div class="row"> <!-- Left Column --> <div class="col-md-6"> <div class="mb-2"> <label class="form-label">Name</label> <input type="text" ngModel name="doctorName" class="form-control form-sm" placeholder="Enter full name" required /> </div> <div class="mb-2"> <label class="form-label">Specialization</label> <input type="text" ngModel name="specialization" class="form-control form-sm" placeholder="Enter specialization" required /> </div> <div class="mb-2"> <label class="form-label">Experience (Years)</label> <input type="number" ngModel name="experience" class="form-control form-sm" placeholder="Enter experience years" required /> </div> </div> <!-- Right Column --> <div class="col-md-6"> <div class="mb-2"> <label class="form-label">Contact Number</label> <input type="tel" ngModel name="contactNumber" class="form-control form-sm" placeholder="Enter contact number" required /> </div> <div class="mb-2"> <label class="form-label">Email</label> <input type="email" ngModel name="email" class="form-control form-sm" placeholder="Enter email address" required /> </div> <!-- Available Days Selection (Checkboxes) --> <label>Available Days:</label> <div class="checkbox-group"> <label><input type="checkbox" ngModel name="availableDays" value="Monday"> Monday</label> <label><input type="checkbox" ngModel name="availableDays" value="Tuesday"> Tuesday</label> <label><input type="checkbox" ngModel name="availableDays" value="Wednesday"> Wednesday</label> <label><input type="checkbox" ngModel name="availableDays" value="Thursday"> Thursday</label> <label><input type="checkbox" ngModel name="availableDays" value="Friday"> Friday</label> <label><input type="checkbox" ngModel name="availableDays" value="Saturday"> Saturday</label> <label><input type="checkbox" ngModel name="availableDays" value="Sunday"> Sunday</label> </div> <!-- Available Time --> <div class="mb-2"> <label class="form-label">Available Time</label> <input type="text" ngModel name="availableTime" class="form-control form-sm" placeholder="Enter time range (e.g., 9:00 AM - 5:00 PM)" required /> </div> </div> </div> <div class="text-center mt-3"> <button type="submit" class="btn btn-primary btn-sm" routerLink="/doctordashboard">Update Profile</button> </div> </form> </div> </section> </body> import { Component, Output, EventEmitter, OnInit } from '@angular/core'; import { FormBuilder, FormGroup, FormsModule, NgForm, ReactiveFormsModule, Validators } from '@angular/forms'; import { Router, RouterLink } from '@angular/router'; import { DocDashboardComponent } from '../doc-dashboard/doc-dashboard.component'; import { DoctorService } from '../doctor.service'; @Component({ selector: 'app-doc-profile', imports:[RouterLink,DocDashboardComponent,ReactiveFormsModule,FormsModule], templateUrl: './doc-profile.component.html', styleUrls: ['./doc-profile.component.css'] }) export class DocProfileComponent { constructor(private fb: FormBuilder, private router: Router,private doctor:DoctorService) {} } import { HttpClient } from '@angular/common/http'; import { Injectable } from '@angular/core'; import { Observable } from 'rxjs'; @Injectable({ providedIn: 'root' }) export class DoctorService { private pathSave = "http://localhost:8083/doctors/save"; constructor(private client: HttpClient) {} } export class Doctor { doctorName: string; specialization: string; experience: number; contactNumber: number; email: string; availableDays: string[]; availableTime: string; constructor( doctorName: string, specialization: string, experience: number, contactNumber: number, email: string, availableDays: string[], availableTime: string ) { this.doctorName = doctorName; this.specialization = specialization; this.experience = experience; this.contactNumber = contactNumber; this.email = email; this.availableDays = availableDays; this.availableTime = availableTime; } } develop the connectivity which save the data entered
+<body>
+    <section class="vh-10 d-flex align-items-center justify-content-center">
+        <div class="col-md-8">
+            <h3 class="text-center mb-4">
+                <i class="fa-solid fa-user-md"></i> Doctor Profile
+            </h3>
+            <h5>Please fill the below details</h5>
+            <form #profileForm="ngForm" (ngSubmit)="addProfile(profileForm)">
+                <div class="row">
+                    <!-- Left Column -->
+                    <div class="col-md-6">
+                        <div class="mb-2">
+                            <label class="form-label">Name</label>
+                            <input type="text" ngModel name="doctorName" class="form-control form-sm"
+                                placeholder="Enter full name" required />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Specialization</label>
+                            <input type="text" ngModel name="specialization" class="form-control form-sm"
+                                placeholder="Enter specialization" required />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Experience (Years)</label>
+                            <input type="number" ngModel name="experience" class="form-control form-sm"
+                                placeholder="Enter experience years" required />
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="col-md-6">
+                        <div class="mb-2">
+                            <label class="form-label">Contact Number</label>
+                            <input type="tel" ngModel name="contactNumber" class="form-control form-sm"
+                                placeholder="Enter contact number" required />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Email</label>
+                            <input type="email" ngModel name="email" class="form-control form-sm"
+                                placeholder="Enter email address" required />
+                        </div>
+
+                        <!-- Available Days Selection (Checkboxes) -->
+                        <div class="mb-2">
+                            <label class="form-label">Available Days:</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                <label *ngFor="let day of days" class="me-3">
+                                    <input type="checkbox" [value]="day" (change)="onDayChange($event)" />
+                                    {{ day }}
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Available Time -->
+                        <div class="mb-2">
+                            <label class="form-label">Available Time</label>
+                            <input type="text" ngModel name="availableTime" class="form-control form-sm"
+                                placeholder="Enter time range (e.g., 9:00 AM - 5:00 PM)" required />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-3">
+                    <button type="submit" class="btn btn-primary btn-sm">Update Profile</button>
+                </div>
+            </form>
+        </div>
+    </section>
+</body>
+
+
+
+import { Component } from '@angular/core';
+import { FormsModule, NgForm, ReactiveFormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { DoctorService } from '../doctor.service';
+ 
+@Component({
+  selector: 'app-doc-profile',
+  imports:[RouterLink,ReactiveFormsModule,FormsModule],
+  templateUrl: './doc-profile.component.html',
+  styleUrls: ['./doc-profile.component.css'],
+})
+export class DocProfileComponent {
+  days: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  selectedDays: string[] = [];
+ 
+  constructor(private router: Router, private doctorService: DoctorService) {}
+ 
+  onDayChange(event: any): void {
+    const day = event.target.value;
+    if (event.target.checked) {
+        if (!this.selectedDays.includes(day)) {
+          this.selectedDays.push(day);
+        }
+      } else {
+        this.selectedDays = this.selectedDays.filter(d => d !== day);
+      }
+    }
+ 
+  addProfile(form: NgForm): void {
+    if (form.valid) {
+      const doctorData = {
+        doctorName: form.value.doctorName,
+        specialization: form.value.specialization,
+        experience: form.value.experience,
+        contactNumber: form.value.contactNumber,
+        email: form.value.email,
+        availableDays: form.value.selectedDays,
+        availableTime: form.value.availableTime
+      };
+ 
+      this.doctorService.saveDoctorProfile(doctorData).subscribe({
+        next: (res) => {
+          console.log('Doctor profile saved successfully!', res);
+          this.router.navigate(['/doctordashboard']);
+        },
+        error: (err) => {
+          console.error('Error saving doctor profile:', err);
+        }
+      });
+    }
+  }
+}
